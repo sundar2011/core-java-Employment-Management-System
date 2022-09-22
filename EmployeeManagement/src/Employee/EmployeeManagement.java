@@ -2,8 +2,17 @@ package Employee;
 import Employee.*;
 
 import java.util.*;
+import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Scanner;
 
-public class EmployeeManagement {
+public class EmployeeManagement implements Serializable{
 	
 	
 	static void display(ArrayList<Employee> al) {
@@ -28,6 +37,31 @@ public class EmployeeManagement {
 		
 		Scanner sc=new Scanner(System.in);	
 		ArrayList<Employee> al=new ArrayList<Employee>();
+		
+		File f=null;
+		FileInputStream fis=null;
+		ObjectInputStream ois=null;
+		FileOutputStream fos = null;
+		ObjectOutputStream oos =null;
+		
+		try {
+			
+			File myFile = new File("test.txt");
+	        System.out.println("Attempting to read from file in: "+myFile.getCanonicalPath());
+			 
+//			File homedir = new File(System.getProperty("user.home"));
+			f=new File("/home/sundharam/git/core-java/EmployeeManagement/test.txt");
+			if(f.exists())
+			{
+			fis = new FileInputStream(f);
+				ois = new ObjectInputStream(fis);
+				al = (ArrayList<Employee>)ois.readObject();
+			}
+			
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+				
   
 	System.out.println("----------Employee Management Systems---------");
 	System.out.println("1.Adding the Employee");
@@ -135,6 +169,67 @@ public class EmployeeManagement {
 		}
 		break;
 		
+	case 4:
+		System.out.println("Enter the id to Delete the Employee");
+		id=sc.nextInt();
+		int k=0;
+		try {
+			for(Employee e:al) {
+				if(id==e.id) {
+					
+					al.remove(e);
+					display(al);
+					k++;
+				}
+			}
+			if(k==0) {
+				System.out.println("Enter the Employee id is not avaiable");
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e);			
+		}
+		
+		break;
+		
+	case 5:
+		try {
+			al = (ArrayList<Employee>)ois.readObject();
+		}
+		catch(ClassNotFoundException e) {
+			System.out.println(e);			
+		}
+        catch(Exception e){
+        	System.out.println(e);				
+		}
+		display(al);
+		break;
+	case 6: try {
+		fos = new FileOutputStream(f);
+		oos = new ObjectOutputStream(fos);
+		oos.writeObject(al);
+	} catch (IOException e1) {
+		e1.printStackTrace();
+	}
+	catch(Exception e2){
+		e2.printStackTrace();
+	}
+	finally{
+		try {
+			fis.close();
+			ois.close();
+			fos.close();
+			oos.close();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+			}
+		System.out.println("\nYou have chosen EXIT !! Saving Files and closing the tool.");
+		sc.close();
+		System.exit(0);
+		break;
+    
+    
 	default:
 		System.out.println("u not selected the give list options");
 		break;
